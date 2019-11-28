@@ -6,10 +6,9 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import io.reactivex.Observable
-import io.reactivex.android.plugins.RxAndroidPlugins
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -17,31 +16,15 @@ class MainActivity : AppCompatActivity() {
     val compositeDisposable = CompositeDisposable()
     var count = 0
 
+    // Cold Observable
+    val gugudanObservable = Observable.just(1, 2, 3, 4, 5, 6, 7, 8, 9)
+    // Hot Observable
+//    val gugudanObservable = PublishSubject.create<Int>()
+
     @SuppressLint("LongLogTag")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-//        val disposable = Observable.just("one", "two", "three", "four", "five")
-//            .subscribeOn(Schedulers.newThread())
-//            .flatMap { data ->
-//                Observable.create<String> {
-//                    it.onComplete()
-//                    it.onNext("$data * $data")
-//                }
-//                // Observable.just(data).map { data -> "$data * $data" }
-//            }
-//            .observeOn(AndroidSchedulers.mainThread())
-//            .subscribe {
-//                Log.d("RxAndroid Example : ", it)
-//            }
-//
-//        compositeDisposable.add(disposable)
-
-        // Cold Observable
-//         val gugudanObservable = Observable.just(1, 2, 3, 4, 5, 6, 7, 8, 9)
-        // Hot Observable
-        val gugudanObservable = PublishSubject.create<Int>()
 
         val gugudanDisposable = gugudanObservable
             .subscribeOn(Schedulers.newThread())
@@ -53,7 +36,7 @@ class MainActivity : AppCompatActivity() {
                     it.onComplete()
                 }
             }
-            // .observeOn(AndroidSchedulers.mainThread())
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
                 Log.d("publish Subject : ", it)
                 tv_text.text = it
@@ -86,8 +69,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         btn_print_gugu_func.setOnClickListener {
-            gugudanObservable.onNext(count++)
-
+            // Only Hot Observable
+//            gugudanObservable.onNext(count++)
+//
 //            val gugudanDisposable2 = gugudanObservable
 //                .subscribeOn(Schedulers.io())
 //                .flatMap(
